@@ -1,0 +1,19 @@
+# Auto detect text files and normalize line endings
+* text=auto
+
+# Explicitly set text files
+*.js text
+*.jsx text
+*.json text
+*.md text
+*.css text
+*.scss text
+*.html text
+*.env text
+
+# Explicitly set binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
