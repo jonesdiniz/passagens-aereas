@@ -10,6 +10,7 @@ describe('validateSearchForm', () => {
   const validForm = {
     origin: 'GRU',
     destination: 'JFK',
+    dateSearchMode: 'exact',
     departureDate: tomorrow,
     returnDate: dayAfterTomorrow
   };
@@ -39,6 +40,28 @@ describe('validateSearchForm', () => {
     expect(errors.departureDate).toBe('Data de partida é obrigatória');
   });
 
+  it('should not require departureDate for flexible search windows', () => {
+    const errors = validateSearchForm({
+      origin: 'GRU',
+      destination: 'JFK',
+      dateSearchMode: 'nextSixMonths',
+      departureDate: null,
+      passengers: 2
+    });
+    expect(errors).toEqual({});
+  });
+
+  it('should require targetMonth for month-only searches', () => {
+    const errors = validateSearchForm({
+      origin: 'GRU',
+      destination: 'JFK',
+      dateSearchMode: 'flexibleMonth',
+      targetMonth: '',
+      passengers: 2
+    });
+    expect(errors.targetMonth).toBe('Informe o mês da viagem');
+  });
+
   it('should enforce minimum length for origin', () => {
     const errors = validateSearchForm({ ...validForm, origin: 'A' });
     expect(errors.origin).toBe('Origem deve ter pelo menos 3 caracteres');
@@ -64,5 +87,10 @@ describe('validateSearchForm', () => {
   it('should prevent returnDate from being before departureDate', () => {
     const errors = validateSearchForm({ ...validForm, returnDate: today });
     expect(errors.returnDate).toBe('Data de retorno deve ser após a data de partida');
+  });
+
+  it('should prevent invalid passenger counts', () => {
+    const errors = validateSearchForm({ ...validForm, passengers: 0 });
+    expect(errors.passengers).toBe('Número de passageiros deve estar entre 1 e 9');
   });
 });

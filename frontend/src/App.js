@@ -8,6 +8,7 @@ import Container from '@mui/material/Container';
 import HomePage from './pages/HomePage';
 import ResultsPage from './pages/ResultsPage';
 import StrategiesPage from './pages/StrategiesPage';
+import AdminPage from './pages/AdminPage';
 
 // Import components and context
 import { SearchProvider } from './context/SearchContext';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/resultados" element={<ResultsPage />} />
           <Route path="/estrategias" element={<StrategiesPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </Container>
       <Footer />

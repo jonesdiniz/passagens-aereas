@@ -31,6 +31,16 @@ export const SearchProvider = ({ children }) => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [searchSummary, setSearchSummary] = useState(() => {
+    try {
+      const savedSummary = localStorage.getItem('searchSummary');
+      return savedSummary ? JSON.parse(savedSummary) : null;
+    } catch (error) {
+      console.error('Erro ao carregar resumo do localStorage:', error);
+      return null;
+    }
+  });
   
   const [searchParams, setSearchParams] = useState(() => {
     try {
@@ -64,15 +74,27 @@ export const SearchProvider = ({ children }) => {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (searchSummary) {
+      try {
+        localStorage.setItem('searchSummary', JSON.stringify(searchSummary));
+      } catch (error) {
+        console.error('Erro ao salvar resumo no localStorage:', error);
+      }
+    }
+  }, [searchSummary]);
+
   /**
    * Limpa todos os dados de busca (resultados e parâmetros)
    */
   const clearSearchData = () => {
     setSearchResults([]);
     setSearchParams({});
+    setSearchSummary(null);
     try {
       localStorage.removeItem('searchResults');
       localStorage.removeItem('searchParams');
+      localStorage.removeItem('searchSummary');
     } catch (error) {
       console.error('Erro ao limpar dados do localStorage:', error);
     }
@@ -88,6 +110,8 @@ export const SearchProvider = ({ children }) => {
     setError,
     searchParams,
     setSearchParams,
+    searchSummary,
+    setSearchSummary,
     clearSearchData
   };
 
