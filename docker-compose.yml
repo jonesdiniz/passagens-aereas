@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: passagens-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - FRONTEND_URL=http://localhost:80
+      - SIMULATE_DELAY=false
+      - AMADEUS_CLIENT_ID=${AMADEUS_CLIENT_ID:-}
+      - AMADEUS_CLIENT_SECRET=${AMADEUS_CLIENT_SECRET:-}
+      - SKYSCANNER_API_KEY=${SKYSCANNER_API_KEY:-}
+      - KIWI_API_KEY=${KIWI_API_KEY:-}
+    volumes:
+      - backend-data:/app/data
+    networks:
+      - passagens-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: passagens-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - passagens-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  backend-data:
+
+networks:
+  passagens-network:
+    driver: bridge
