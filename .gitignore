@@ -53,4 +53,5 @@ Thumbs.db
 # Frontend specific
 /frontend/node_modules
 /frontend/build
+/frontend/dist
 /frontend/coverage
